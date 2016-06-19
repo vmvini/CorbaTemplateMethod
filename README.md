@@ -1,9 +1,17 @@
 # CorbaTemplateMethod
 simple corba abstraction to simplify the  client and server coding on java
 
-**This abstraction follows the Template Method design pattern**
+**The CorbaServer class follows the Template Method design pattern**
 
-So, you must implement your own concrete classes for the client and the server.
+So, you must implement your own concrete class for the server.
+
+**Client's Dependencies**
+
+The CorbaClient class is using the ServiceLocator API 
+
+` git clone https://github.com/ricardojob/service-locator.git `
+
+
 
 **CORBA development Overview**
 
@@ -13,5 +21,5 @@ So, you must implement your own concrete classes for the client and the server.
 
 3- Use the generated codes as dependencies of your client/server codes
 
-4- Implement the client/server abstract methods
+4- Implement the server abstract methods
 
