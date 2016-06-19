@@ -36,9 +36,7 @@ public class TesteContext {
             
             // Usando a Locator API
             /** 
-            ServerContext contexto = new ServerContext(
-                    new IIOPContext(), 
-                    App.name(null).namespace(Scoped.EMPTY));
+            ServerContext contexto = new ServerContext(new IIOPContext());
             
             System.out.println("Name: "+contexto.bean("Hello").name());
             Hello locate = contexto.bean("Hello").locate();
