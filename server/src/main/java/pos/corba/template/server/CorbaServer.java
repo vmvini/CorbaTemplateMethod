@@ -19,9 +19,9 @@ import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 import org.omg.PortableServer.POAManagerPackage.AdapterInactive;
 import org.omg.PortableServer.POAPackage.ServantNotActive;
-import org.omg.PortableServer.POAPackage.WrongPolicy;
-import pos.corba.template.addressconfig.Address;
+import org.omg.PortableServer.POAPackage.WrongPolicy; 
 import java.lang.reflect.Constructor;
+import pos.corba.template.addressconfig.Address;
 /**
  * 
  * @author vmvini
