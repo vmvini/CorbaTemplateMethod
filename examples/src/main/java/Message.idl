@@ -1,0 +1,5 @@
+module pos{
+  interface Message{
+    string hello();
+  };
+};

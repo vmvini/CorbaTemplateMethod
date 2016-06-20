@@ -15,8 +15,17 @@ public class Address {
     private String host;
     
     public Address(){
-        port = "1050";
-        host = "localhost";
+        this("localhost","1050");
+    }
+
+    private Address(String host, String port) {
+        this.port = port;
+        this.host = host;
+    }
+    
+    
+    public static Address create(String host, String port){
+        return new Address();
     }
     
     public String[] getConnectionArgs(){
