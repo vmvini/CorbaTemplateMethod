@@ -1,5 +1,6 @@
 package pos.corba.registry;
 
+
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -11,6 +12,7 @@ import org.omg.CosNaming.NamingContextExtHelper;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 import org.omg.PortableServer.Servant;
+import pos.corba.template.addressconfig.Address;
 
 /**
  * @author Ricardo Job
@@ -23,10 +25,10 @@ public final class ORBRegistry implements Registry<org.omg.CORBA.Object> {
     private ORB orb;
     private POA rootPOA;
 
-    public static Registry create() {
-        Properties propeties = new Properties();
-        String[] a = new String[]{"-ORBInitialPort", "1050", " -ORBInitialHost", " localhost"};
-        return new ORBRegistry(a, propeties);
+    public static Registry create(Address config) {
+//        Properties propeties = new Properties();
+//        String[] a = new String[]{"-ORBInitialPort", "1050", " -ORBInitialHost", " localhost"};
+        return new ORBRegistry(config.getConnectionArgs(), System.getProperties());
     }
 
     private ORBRegistry(String[] a, Properties propeties) {
@@ -40,8 +42,7 @@ public final class ORBRegistry implements Registry<org.omg.CORBA.Object> {
         }
     }
 
-    //TODO: Usar Reflection.. 
-    
+    //TODO: Usar Reflection..    
     @Override
     public void bind(String name, Servant obj) {
         try {
@@ -49,7 +50,9 @@ public final class ORBRegistry implements Registry<org.omg.CORBA.Object> {
             NameComponent path[] = context.to_name(name);
 //            Talvez o private R getRemoteObject de CorbaServer
 //            Hello referenceRemote = HelloHelper.narrow(ref);
-//            context.rebind(path, referenceRemote);
+            Object referenceRemote = obj._this_object();
+            
+            context.rebind(path, referenceRemote);
         } catch (Exception ex) {
             Logger.getLogger(ORBRegistry.class.getName()).log(Level.SEVERE, null, ex);
         }

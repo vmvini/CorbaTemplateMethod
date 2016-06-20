@@ -6,7 +6,7 @@ import org.omg.PortableServer.Servant;
  *
  * @author Ricardo Job
  */
-interface Registry<T> {
+public interface Registry<T> {
 
     //TODO?: public <T> T lookup(String name);
 
