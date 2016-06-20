@@ -69,7 +69,7 @@ public final class ORBRegistry implements Registry<org.omg.CORBA.Object> {
             String helperName = o.get().toString().split(" ")[1].trim();
             
             java.lang.Object referenceRemote = getRemoteObject(helperName, ref);
-            context.rebind(path, ref);
+            context.rebind(path, (org.omg.CORBA.Object)referenceRemote);
 
         } catch (Exception ex) {
             Logger.getLogger(ORBRegistry.class.getName()).log(Level.SEVERE, null, ex);
