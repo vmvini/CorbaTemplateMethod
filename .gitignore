@@ -1,4 +1,6 @@
 addressconfig/target/
 client/target/
 server/target/
-/examples/target/
+/examples/message-simple/target/
+examples/.DS_Store
+*.DS_Store
