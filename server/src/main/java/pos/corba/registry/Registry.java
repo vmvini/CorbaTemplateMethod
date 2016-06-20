@@ -21,4 +21,6 @@ public interface Registry<T> {
     
     public void active(); 
     public void close();
+    
+    
 }

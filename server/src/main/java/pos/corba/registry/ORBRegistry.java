@@ -1,6 +1,6 @@
 package pos.corba.registry;
 
-
+import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,8 +26,6 @@ public final class ORBRegistry implements Registry<org.omg.CORBA.Object> {
     private POA rootPOA;
 
     public static Registry create(Address config) {
-//        Properties propeties = new Properties();
-//        String[] a = new String[]{"-ORBInitialPort", "1050", " -ORBInitialHost", " localhost"};
         return new ORBRegistry(config.getConnectionArgs(), System.getProperties());
     }
 
@@ -42,16 +40,12 @@ public final class ORBRegistry implements Registry<org.omg.CORBA.Object> {
         }
     }
 
-    //TODO: Usar Reflection..    
     @Override
     public void bind(String name, Servant obj) {
         try {
             org.omg.CORBA.Object ref = rootPOA.servant_to_reference(obj);
             NameComponent path[] = context.to_name(name);
-//            Talvez o private R getRemoteObject de CorbaServer
-//            Hello referenceRemote = HelloHelper.narrow(ref);
-            Object referenceRemote = obj._this_object();
-            
+            Object referenceRemote = invoke_this(obj);
             context.rebind(path, referenceRemote);
         } catch (Exception ex) {
             Logger.getLogger(ORBRegistry.class.getName()).log(Level.SEVERE, null, ex);
@@ -92,5 +86,14 @@ public final class ORBRegistry implements Registry<org.omg.CORBA.Object> {
         } catch (Exception ex) {
             Logger.getLogger(ORBRegistry.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    /**
+     * The method *POA_this() call *Helper.narrow(org.​omg.​CORBA.Object)
+     */
+    private Object invoke_this(Servant obj) throws SecurityException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, IllegalArgumentException {
+        return (Object) obj.getClass()
+                .getMethod("_this", new Class[]{})
+                .invoke(obj, new java.lang.Object[]{});
     }
 }

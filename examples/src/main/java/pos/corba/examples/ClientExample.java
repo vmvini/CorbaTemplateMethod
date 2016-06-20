@@ -1,13 +1,9 @@
 package pos.corba.examples;
 
-//import hello.Hello;
 import ifpb.locator.ServerContext;
 import ifpb.locator.context.IIOPContext; 
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import pos.Message;
 
 /**
