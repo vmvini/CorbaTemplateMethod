@@ -1,6 +1,8 @@
 package pos.corba.registry;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,7 +14,11 @@ import org.omg.CosNaming.NamingContextExtHelper;
 import org.omg.PortableServer.POA;
 import org.omg.PortableServer.POAHelper;
 import org.omg.PortableServer.Servant;
+
+import java.util.Set;
+import java.util.Optional;
 import pos.corba.template.addressconfig.Address;
+import pos.reflection.ReflectionUtil;
 
 /**
  * @author Ricardo Job
@@ -45,11 +51,56 @@ public final class ORBRegistry implements Registry<org.omg.CORBA.Object> {
         try {
             org.omg.CORBA.Object ref = rootPOA.servant_to_reference(obj);
             NameComponent path[] = context.to_name(name);
-            Object referenceRemote = invoke_this(obj);
-            context.rebind(path, referenceRemote);
+//          pegando superclasse de obj 
+//          supondo que obj é um objeto remoto que estende um *POA que estende um Servant
+            Class<?> objPOA = obj.getClass().getSuperclass();
+//          pegando pacote do projeto gerado pelo IDLJ            
+            Package idlPackage = objPOA.getPackage();
+
+//          pegando classes desse pacote            
+            Set<Class<? extends java.lang.Object>> idlClasses = ReflectionUtil.getClassesUnderPackage(idlPackage.getName());
+//          pegando a classe helper somente
+            Optional o = idlClasses.stream().filter(c -> c.toString().endsWith("Helper"))
+                    .findFirst();
+            String helperName = o.get().toString().split(" ")[1].trim();
+
+            java.lang.Object referenceRemote = getRemoteObject(helperName, ref);
+            context.rebind(path, (org.omg.CORBA.Object) referenceRemote);
+
         } catch (Exception ex) {
             Logger.getLogger(ORBRegistry.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+//    @Override
+    public void bind2(String name, Servant obj) {
+        try {
+            org.omg.CORBA.Object ref = rootPOA.servant_to_reference(obj);
+            NameComponent path[] = context.to_name(name);
+
+            Object referenceRemote = invoke_this(obj);
+            context.rebind(path, referenceRemote);
+
+        } catch (Exception ex) {
+            Logger.getLogger(ORBRegistry.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private java.lang.Object getRemoteObject(String helperClass, org.omg.CORBA.Object ref) throws NoSuchMethodException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        java.lang.Object o = invokeNarrow(helperClass, ref);
+        return o;
+    }
+
+    private java.lang.Object invokeNarrow(String helperClass, org.omg.CORBA.Object o) throws NoSuchMethodException, ClassNotFoundException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        Method narrow = getMethod(helperClass, "narrow", org.omg.CORBA.Object.class);
+        java.lang.Object resp = narrow.invoke(null, o);
+        return resp;
+    }
+
+    private Method getMethod(String className, String methodName, Class parameterType) throws ClassNotFoundException, NoSuchMethodException {
+        Class myclass = Class.forName(className);
+        Method method = myclass.getMethod(methodName, parameterType);
+        return method;
     }
 
     @Override
